@@ -1,0 +1,223 @@
+“Compliance Evidence Pipeline using LangGraph”
+
+🎯 The Core Idea
+
+You build a small, production-style AI pipeline that:
+
+Takes a company website URL
+
+Uses Playwright to capture evidence (HTML + screenshot)
+
+Uses an LLM (abstracted like Bedrock) to extract structured compliance information
+
+Validates output using a strict Pydantic schema
+
+Retries extraction if validation fails
+
+Generates a short structured report
+
+Logs every step for auditability
+
+This mimics what companies in regulated AI environments actually build.
+
+🧠 The Philosophy Behind It
+
+This is not about scraping.
+
+It’s about demonstrating:
+
+Controlled AI workflows
+
+Graph-based orchestration
+
+Output validation
+
+Retry logic
+
+Audit trails
+
+Production thinking
+
+You’re simulating:
+
+“AI system for regulated industries that must be reliable and auditable.”
+
+That aligns perfectly with:
+
+KRITIS
+
+Blueprint-first approach
+
+Logging/Audit trails
+
+Multi-agent workflows
+
+🏗 High-Level Architecture
+
+Graph flow:
+
+[Start]
+   ↓
+[Collect Evidence via Playwright]
+   ↓
+[Extract Structured Data via LLM]
+   ↓
+[Validate with Pydantic]
+   ↓
+(If invalid and retry_count < 1)
+      ↺ Back to Extract
+   ↓
+[Generate Structured Report]
+   ↓
+[Write Audit Log]
+   ↓
+[End]
+
+
+This is a true graph:
+
+Conditional edge (retry)
+
+Stateful transitions
+
+Clear node responsibilities
+
+🧱 The State Object
+
+Your graph has shared state:
+
+{
+  "url": str,
+  "html": str | None,
+  "screenshot_path": str | None,
+  "extracted_data": dict | None,
+  "validated": bool,
+  "retry_count": int,
+  "report": str | None
+}
+
+
+Every node:
+
+Reads from state
+
+Writes to state
+
+Emits audit log
+
+🕵️ Node 1 — Evidence Collector (Playwright)
+
+What it does:
+
+Opens URL
+
+Waits for network idle
+
+Saves:
+
+raw.html
+
+screenshot.png
+
+Why this matters:
+
+Deterministic evidence capture
+
+Reproducibility
+
+Audit trail
+
+Compliance mindset
+
+In interview language:
+
+“The evidence node ensures deterministic capture of webpage artifacts for traceability.”
+
+🤖 Node 2 — LLM Extraction (Bedrock-style abstraction)
+
+You define a schema:
+
+class ComplianceInfo(BaseModel):
+    company_name: str
+    contact_email: str | None
+    mentions_iso27001: bool
+    mentions_soc2: bool
+    privacy_policy_present: bool
+
+
+Prompt:
+
+Extract the following fields from the HTML.
+Return valid JSON only. No explanation.
+
+Then:
+
+Parse
+
+Validate
+
+If it fails → retry once with corrective prompt.
+
+🔁 Why Retry Is Important
+
+LLMs:
+
+Sometimes return invalid JSON
+
+Sometimes miss fields
+
+By adding retry logic:
+
+You demonstrate:
+
+You understand LLM unreliability
+
+You design defensively
+
+You don’t blindly trust AI output
+
+That’s huge for regulated industries.
+
+📝 Node 3 — Report Generator
+
+Generates something structured:
+
+Compliance Evidence Report
+--------------------------
+Company: X
+ISO 27001 Mentioned: Yes
+SOC2 Mentioned: No
+Privacy Policy Present: Yes
+
+Evidence Files:
+- html: evidence/raw.html
+- screenshot: evidence/screenshot.png
+
+
+Clean and boring = good.
+
+📚 Audit Logging
+
+Every node logs something like:
+
+{
+  "timestamp": "...",
+  "node": "extract",
+  "status": "success",
+  "retry_count": 0,
+  "input_hash": "...",
+  "output_hash": "..."
+}
+
+
+In real production:
+
+This would go to DynamoDB
+
+Or CloudWatch
+
+Or S3 for full payloads
+
+In your project:
+
+Write to JSON file
