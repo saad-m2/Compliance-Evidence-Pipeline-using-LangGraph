@@ -1,6 +1,6 @@
 # Compliance Evidence Pipeline using LangGraph
 
-A production-style AI pipeline that extracts structured company information from websites using LangGraph orchestration, Playwright for evidence collection, and Gemini API for LLM processing.
+Study proeject to work with LangGraph and Playwright.
 
 ## How It Works
 
@@ -10,15 +10,9 @@ A production-style AI pipeline that extracts structured company information from
 4. **Report Generation**: Creates structured reports with findings
 5. **Audit Logging**: Logs every step for compliance requirements
 
-## Technology Stack
-
-- **LangGraph**: Graph-based pipeline orchestration
-- **Playwright**: Web automation and HTML capture
-- **Gemini API**: AI-powered data extraction
-- **Pydantic**: Data validation and schema enforcement
-- **BeautifulSoup**: HTML preprocessing and cleaning
 
 ## Setup
+Make an env file and set it up with the gemini api key
 ```bash
 pip install -r requirements.txt
 playwright install
